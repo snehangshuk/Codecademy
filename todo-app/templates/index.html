@@ -4,22 +4,37 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <style>
+        .button {
+          background-color:lightgray;
+          border: black;
+          border: width 2;
+          color:black;
+          padding: 6px 6px;
+          text-align: center;
+          text-decoration: none;
+          display: inline-block;
+          font-size: 14px;
+          margin: 2px 1px;
+          cursor: pointer;
+        }
+      </style>
 </head>
 <body>
-    <form method="POST">
-        {{ template_form.hidden_tag() }}
+    <utl>
         <h1>Todo List</h1>
         {% for todo in todos %}
-            {{ template_form.todo_checkbox(id=loop.index, label=todo) }}{{ todo }}
-            <br>
+            <li>{{ todo.todo_text }}&Tab;<a href="{{url_for('done_todo', todo_id=todo.id)}}" class="button">Remove</a></li></p>
         {% endfor %}
+    </utl>
+    <form method="POST" action="{{ url_for('add_todo') }}">
+        {{ template_form.hidden_tag() }} 
         <p>
-            {{ template_form.todo_text.label }}
-            {{ template_form.todo_text() }}
+            {{ template_form.todo_textbox.label }}
+            {{ template_form.todo_textbox() }}
         </p>
         <p>
             {{ template_form.add_todo() }}
-            {{ template_form.done_todo() }}
         </p>
 </body>
 </html>
