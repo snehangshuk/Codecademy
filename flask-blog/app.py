@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, url_for, flash, redirect, session
+from flask import Flask, render_template, request, url_for, flash, redirect, session, current_app
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.exceptions import abort
 from flask_login import LoginManager, UserMixin, login_required, login_user, logout_user, current_user
@@ -11,6 +11,7 @@ app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///posts_DB.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = 'you-will-never-guess'
+app.config['FLASKY_POSTS_PER_PAGE'] = 20
 #create an SQLAlchemy object named `db` and bind it to your app
 db = SQLAlchemy(app)
 
@@ -89,8 +90,12 @@ def load_user(user_id):
 @app.route('/')
 @app.route('/index')
 def index():
-    posts = Posts.query.all()
-    return render_template('index.html', posts=posts)
+    page =  request.args.get('page', 1, type=int)
+    pagination = Posts.query.order_by(Posts.created.desc()).paginate(
+        page, per_page=current_app.config['FLASKY_POSTS_PER_PAGE'],
+        error_out=False)
+    posts = pagination.items
+    return render_template('index.html', posts=posts, pagination=pagination)
 
 # login route
 @app.route('/login', methods=['GET','POST'])
